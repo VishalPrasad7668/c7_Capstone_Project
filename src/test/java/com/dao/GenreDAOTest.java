@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class GenreDAOTest {
     GenreDAO genreDAO = null;
-
     @BeforeEach
     void setUp() {
         genreDAO = new GenreDAO();

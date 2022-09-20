@@ -6,13 +6,14 @@ import com.dao.PlaylistDAO;
 import com.dao.SongsDAO;
 import com.data.Playlist;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 import static com.dao.PlaylistDAO.displayPlaylists;
 
 public class Jukebox {
-    public static void main(String[] args) throws NullPointerException {
+    public static void main(String[] args) throws NullPointerException, SQLException {
         ArtistDAO artistDAO = new ArtistDAO();
         GenreDAO genreDAO = new GenreDAO();
         SongsDAO songsDAO = new SongsDAO();

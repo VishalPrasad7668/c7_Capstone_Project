@@ -17,8 +17,9 @@ import java.util.Scanner;
 public class JukeboxPlayer {
     static String songsFromDB;
     static int songId;
-    static String filePath;
     Timer t;
+
+    static String filePath;
     // to store current position
     Long currentFrame;
     Clip clip;
@@ -97,8 +98,7 @@ public class JukeboxPlayer {
                 System.out.println("2. resume");
                 System.out.println("3. restart");
                 System.out.println("4. stop");
-                System.out.println("5. Next");
-                System.out.println("6. previous");
+                System.out.println("5. next");
                 int choose = sc.nextInt();
                 audioPlayer.gotoChoice(choose);
                 if (choose == 4)
@@ -132,38 +132,16 @@ public class JukeboxPlayer {
                 stop();
                 break;
             }
-            case 7: {
+            case 5: {
                 stop();
                 SongPlayFromDB();
                 playClip();
                 break;
             }
-            case 5: {
-                Next();
-                break;
-            }
-            case 6: {
-                previous();
-            }
         }
 
     }
 
-    public void Next() {
-        int id = songId;
-        clip.close();
-        t.stop();
-        songId = id + 1;
-
-    }
-
-    public void previous() {
-        int id = songId;
-        clip.close();
-        t.stop();
-        songId = id - 1;
-
-    }
 
     // Method to play the audio
     public void play(Clip clip) {

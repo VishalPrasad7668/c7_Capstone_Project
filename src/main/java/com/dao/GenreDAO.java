@@ -30,7 +30,6 @@ public class GenreDAO {
 
         return genre;
     }
-
     public void displayGenre() {
         System.out.format("%-30s %-30s  %n", "Genre ID", "Genre Name");
         List<Genre> genre = searchGenre();
@@ -40,7 +39,6 @@ public class GenreDAO {
             }
         }
     }
-
     public List<Songs> genreSearchResult(int genreId) {
         List<Songs> genreSearchResult = new ArrayList<>();
         try {
@@ -65,7 +63,6 @@ public class GenreDAO {
         return genreSearchResult;
 
     }
-
     public void displayGenreSongs(int num) {
         List<Songs> songsList = genreSearchResult(num);
         System.out.format("%-30s %-30s %-30s %-30s %n", "Song id", "Song name", "Duration", "Released year");

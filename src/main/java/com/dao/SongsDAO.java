@@ -23,61 +23,51 @@ public class SongsDAO {
         }
     }
 
-    public void getAllSongs() {
+    public void getAllSongs() throws SQLException {
         List<Songs> songsList = new ArrayList<>();
-        try {
-            Connection connection = DbConnection.getConnection();
-            String sql = "SELECT * FROM songs_tbl";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                songsList.add(new Songs(resultSet.getInt(1),
-                        resultSet.getString(2),
-                        resultSet.getInt(3),
-                        resultSet.getInt(4),
-                        resultSet.getString(5),
-                        resultSet.getInt(6),
-                        resultSet.getString(7)));
-            }
-            printSongList(songsList);
 
-        } catch (SQLException e) {
-            e.getStackTrace();
+        Connection connection = DbConnection.getConnection();
+        String sql = "SELECT * FROM songs_tbl";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            songsList.add(new Songs(resultSet.getInt(1),
+                    resultSet.getString(2),
+                    resultSet.getInt(3),
+                    resultSet.getInt(4),
+                    resultSet.getString(5),
+                    resultSet.getInt(6),
+                    resultSet.getString(7)));
         }
+        printSongList(songsList);
+
     }
 
 
-    public List<Songs> readSearchByName(String name) {
+    public List<Songs> readSearchByName(String name) throws SQLException {
         List<Songs> searchByName = new ArrayList<>();
-        try {
-            Connection connection = DbConnection.getConnection();
-            String sql = "SELECT * FROM songs_tbl WHERE song_Name = ? ";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, name);
-            ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (!resultSet.next()) {
-                System.out.println("Song not Found");
+        Connection connection = DbConnection.getConnection();
+        String sql = "SELECT * FROM songs_tbl WHERE song_Name Like ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, name + "%");
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            } else {
-                while (resultSet.next()) {
-                    searchByName.add(new Songs(resultSet.getInt(1),
-                            resultSet.getString(2),
-                            resultSet.getInt(3),
-                            resultSet.getInt(4),
-                            resultSet.getString(5),
-                            resultSet.getInt(6),
-                            resultSet.getString(7)));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (resultSet.next()) {
+            searchByName.add(new Songs(resultSet.getInt(1),
+                    resultSet.getString("song_name"),
+                    resultSet.getInt(3),
+                    resultSet.getInt(4),
+                    resultSet.getString(5),
+                    resultSet.getInt(6),
+                    resultSet.getString(7)));
         }
+
         return searchByName;
 
     }
 
-    public void displaySearchByNameSongs(String songName) {
+    public void displaySearchByNameSongs(String songName) throws SQLException {
         List<Songs> songsList = readSearchByName(songName);
         if (!songsList.isEmpty()) {
             System.out.format("%-30s %-30s %-30s %-30s %n", "Song id", "Song name", "Duration", "Released year");

@@ -26,7 +26,7 @@ public class Jukebox {
         int repeat;
         do {
             System.out.println("*****************************************Welcome to JUKEBOX******************************************");
-            System.out.format("\t\t\t\t\t\t\t\t\t\t-*Select Songs By*-\n\t\t\t\t\t\t\t\t\t\t1. Song Name\n\t\t\t\t\t\t\t\t\t\t" +
+            System.out.format("\t\t\t\t\t\t\t\t\t\t-*Select Songs By*-\n\t\t\t\t\t\t\t\t\t\t1. Songs\n\t\t\t\t\t\t\t\t\t\t" +
                     "2. Jukebox Library\n\t\t\t\t\t\t\t\t\t\t3. Playlist");
             System.out.println();
             System.out.println("*****************************************************************************************************");

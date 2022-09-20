@@ -74,37 +74,26 @@ public class PlaylistDAO {
                 resultSet.getInt(1);
                 resultSet.getString(2);
             }
-
-            /*String sql2 = "SELECT songs_id FROM playlist_songs_tbl where playlist_id = ?";
-            PreparedStatement preparedStatement1 = connection.prepareStatement(sql2);
-            preparedStatement1.setInt(1,playlistID);
-            ResultSet resultSet1 = preparedStatement1.executeQuery();*/
-
-            String sql3 = "SELECT * FROM songs_tbl WHERE songs_id = (SELECT songs_id FROM playlist_songs_tbl where playlist_id = ?) ";
-            PreparedStatement preparedStatement1 = connection.prepareStatement(sql3);
-            preparedStatement1.setInt(1, playlistID);
-            ResultSet resultSet1 = preparedStatement1.executeQuery();
-            //while (resultSet.next()) {
-            //int songId = resultSet1.getInt(1);
-            //PreparedStatement preparedStatement2 = connection.prepareStatement(sql3);
-            //preparedStatement2.setInt(1,songId);
-            //ResultSet resultSet2 = preparedStatement2.executeQuery();
-
-            while (resultSet1.next()) {
-                    /*int songid = resultSet1.getInt("songs_id");
-                    String songName = resultSet1.getString("song_Name");
-                    String duration = resultSet1.getString("duration");
-                    String year = resultSet1.getString("release_year");
-                    System.out.println(songid+" "+songName+" "+duration+" "+year);*/
-                displaySongsList.add(new Songs(resultSet1.getInt(1),
-                        resultSet1.getString(2),
-                        resultSet1.getInt(3),
-                        resultSet1.getInt(4),
-                        resultSet1.getString(5),
-                        resultSet1.getInt(6),
-                        resultSet1.getString(7)));
+            String sql2 = "SELECT songs_id FROM playlist_songs_tbl where playlist_id = ?";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
+            preparedStatement2.setInt(1, playlistID);
+            ResultSet resultSet4 = preparedStatement2.executeQuery();
+            while (resultSet4.next()) {
+                int songId = resultSet4.getInt(1);
+                String sql3 = "SELECT * FROM songs_tbl WHERE songs_id = ? ";
+                PreparedStatement preparedStatement1 = connection.prepareStatement(sql3);
+                preparedStatement1.setInt(1, songId);
+                ResultSet resultSet1 = preparedStatement1.executeQuery();
+                while (resultSet1.next()) {
+                    displaySongsList.add(new Songs(resultSet1.getInt(1),
+                            resultSet1.getString(2),
+                            resultSet1.getInt(3),
+                            resultSet1.getInt(4),
+                            resultSet1.getString(5),
+                            resultSet1.getInt(6),
+                            resultSet1.getString(7)));
+                }
             }
-            //}
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -120,12 +109,8 @@ public class PlaylistDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-               /* int playid = resultSet.getInt("playlist_id");
-                String playName = resultSet.getString("playlist_Name");
-                int sid = resultSet.getInt("songs_id");*/
                 playlists.add(new Playlist(resultSet.getInt("playlist_id"),
                         resultSet.getString("playlist_Name")));
-                //System.out.println(playid+" "+playName+" "+sid);
             }
         } catch (SQLException e) {
             e.printStackTrace();

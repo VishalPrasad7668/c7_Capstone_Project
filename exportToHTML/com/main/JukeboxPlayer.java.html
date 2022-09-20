@@ -1,0 +1,236 @@
+<html>
+<head>
+    <title>JukeboxPlayer.java</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #808080; font-style: italic;}
+.s3 { color: #008000; font-weight: bold;}
+.s4 { color: #0000ff;}
+
+    </style>
+</head>
+<body bgcolor="#ffffff">
+<table BGCOLOR="#c0c0c0" CELLPADDING=5 CELLSPACING=0 COLS=1 WIDTH="100%">
+    <tr>
+        <td>
+            <center>
+                <font color="#000000" face="Arial, Helvetica">
+                    JukeboxPlayer.java</font>
+            </center>
+        </td>
+    </tr>
+</table>
+<pre><span class="s0">package </span>com.main;
+
+<span class="s0">import </span>com.util.DbConnection;
+
+<span class="s0">import </span>javax.sound.sampled.AudioInputStream;
+<span class="s0">import </span>javax.sound.sampled.AudioSystem;
+<span class="s0">import </span>javax.sound.sampled.Clip;
+<span class="s0">import </span>javax.sound.sampled.LineUnavailableException;
+<span class="s0">import </span>javax.sound.sampled.UnsupportedAudioFileException;
+<span class="s0">import </span>java.io.File;
+<span class="s0">import </span>java.io.IOException;
+<span class="s0">import </span>java.sql.Connection;
+<span class="s0">import </span>java.sql.PreparedStatement;
+<span class="s0">import </span>java.sql.ResultSet;
+<span class="s0">import </span>java.sql.SQLException;
+<span class="s0">import </span>java.util.Scanner;
+
+<span class="s0">public class </span>JukeboxPlayer {
+    <span class="s0">static </span>String songsFromDB;
+    <span class="s2">//static int songId;</span>
+
+    <span class="s0">public void </span>SongPlayFromDB() {
+
+        <span class="s0">try </span>{
+            Connection connection = DbConnection.getConnection();
+            String path = <span class="s3">&quot;C:</span><span class="s0">\\</span><span class="s3">Users</span><span
+            class="s0">\\</span><span class="s3">VISHAL PRASAD</span><span class="s0">\\</span><span
+            class="s3">Desktop</span><span class="s0">\\</span><span class="s3">Java</span><span
+            class="s0">\\</span><span class="s3">Course7</span><span class="s0">\\</span><span class="s3">c7_Capstone_Project</span><span
+            class="s0">\\</span><span class="s3">c7_Capstone_Project</span><span class="s0">\\</span><span class="s3">src</span><span
+            class="s0">\\</span><span class="s3">main</span><span class="s0">\\</span><span
+            class="s3">resources</span><span class="s0">\\</span><span class="s3">Project Jukebox Songs</span><span
+            class="s0">\\</span><span class="s3">&quot;</span>;
+            String sql = <span class="s3">&quot;select resource_path from songs_tbl where songs_id=?&quot;</span>;
+            Scanner scanner = <span class="s0">new </span>Scanner(System.in);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            System.out.println(<span class="s3">&quot;Enter Song ID&quot;</span>);
+            <span class="s0">int </span>songId =scanner.nextInt();
+
+
+            preparedStatement.setInt(<span class="s4">1</span>, songId);
+
+            ResultSet rs= preparedStatement.executeQuery();
+
+            <span class="s0">while </span>(rs.next()) {
+                songsFromDB = path + rs.getString(<span class="s4">1</span>);
+            }
+        } <span class="s0">catch </span>(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    <span class="s2">// to store current position</span>
+    Long currentFrame ;
+    Clip clip;
+
+    <span class="s2">// current status of clip</span>
+    String status;
+
+    AudioInputStream audioInputStream;
+    <span class="s0">static </span>String filePath = songsFromDB;
+
+    <span class="s0">public </span>Clip playClip() <span class="s0">throws </span>UnsupportedAudioFileException, IOException, LineUnavailableException {
+
+        filePath = songsFromDB;
+        audioInputStream =
+                AudioSystem.getAudioInputStream(<span class="s0">new </span>File(filePath).getAbsoluteFile());
+
+        <span class="s2">// create clip reference</span>
+        clip = AudioSystem.getClip();
+
+        <span class="s2">// open audioInputStream to the clip</span>
+        clip.open(audioInputStream);
+
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        <span class="s0">return </span>clip;
+    }
+
+    <span class="s0">public void </span>SongsPlay() {
+        <span class="s0">try </span>{
+            JukeboxPlayer audioPlayer =
+                    <span class="s0">new </span>JukeboxPlayer();
+            Clip clip=audioPlayer.playClip();
+            audioPlayer.play(clip);
+            Scanner sc = <span class="s0">new </span>Scanner(System.in);
+
+            <span class="s0">while </span>(<span class="s0">true</span>)
+            {
+                System.out.println(<span class="s3">&quot;1. pause&quot;</span>);
+                System.out.println(<span class="s3">&quot;2. resume&quot;</span>);
+                System.out.println(<span class="s3">&quot;3. restart&quot;</span>);
+                System.out.println(<span class="s3">&quot;4. stop&quot;</span>);
+                <span class="s0">int </span>choose = sc.nextInt();
+                audioPlayer.gotoChoice(choose);
+                <span class="s0">if </span>(choose == <span class="s4">4</span>)
+                    <span class="s0">break</span>;
+            }
+
+        }
+
+        <span class="s0">catch </span>(Exception ex) {
+            System.out.println(<span class="s3">&quot;Error with playing sound.&quot;</span>);
+            ex.printStackTrace();
+
+        }
+    }
+
+    <span class="s2">// Work as the user enters his choice</span>
+
+    <span class="s0">private void </span>gotoChoice(<span class="s0">int </span>c) <span class="s0">throws </span>IOException, LineUnavailableException, UnsupportedAudioFileException {
+        <span class="s0">switch </span>(c) {
+            <span class="s0">case </span><span class="s4">1</span>: {
+                pause();
+                <span class="s0">break</span>;
+            }
+            <span class="s0">case </span><span class="s4">2</span>: {
+                resumeAudio();
+                <span class="s0">break</span>;
+            }
+            <span class="s0">case </span><span class="s4">3</span>: {
+                restart();
+                <span class="s0">break</span>;
+            }
+            <span class="s0">case </span><span class="s4">4</span>: {
+                stop();
+                <span class="s0">break</span>;
+            }
+            <span class="s0">case </span><span class="s4">5</span>: {
+                stop();
+                SongPlayFromDB();
+                playClip();
+                <span class="s0">break</span>;
+            }
+        }
+
+    }
+
+    <span class="s2">// Method to play the audio</span>
+    <span class="s0">public void </span>play(Clip clip)
+    {
+        <span class="s2">//start the clip</span>
+
+        clip.start();
+
+        status = <span class="s3">&quot;play&quot;</span>;
+        System.out.println(<span class="s3">&quot;Status after play&quot;</span>+status);
+    }
+
+    <span class="s2">// Method to pause the audio</span>
+    <span class="s0">public void </span>pause()
+    {
+        <span class="s0">if </span>(status.equals(<span class="s3">&quot;paused&quot;</span>))
+        {
+            System.out.println(<span class="s3">&quot;audio is already paused&quot;</span>);
+            <span class="s0">return</span>;
+        }
+        <span class="s0">this</span>.currentFrame = <span class="s0">this</span>.clip.getMicrosecondPosition();
+        clip.stop();
+        status = <span class="s3">&quot;paused&quot;</span>;
+        System.out.println(<span class="s3">&quot;Status after play&quot;</span>+status);
+    }
+
+    <span class="s2">// Method to resume the audio</span>
+    <span class="s0">public void </span>resumeAudio() <span class="s0">throws </span>UnsupportedAudioFileException,
+            IOException, LineUnavailableException
+    {
+        <span class="s0">if </span>(status.equals(<span class="s3">&quot;play&quot;</span>))
+        {
+            System.out.println(<span class="s3">&quot;Audio is already &quot;</span>+
+                    <span class="s3">&quot;being played&quot;</span>);
+            <span class="s0">return</span>;
+        }
+        clip.close();
+        resetAudioStream();
+        clip.setMicrosecondPosition(currentFrame);
+        <span class="s0">this</span>.play(clip);
+    }
+
+    <span class="s2">// Method to restart the audio</span>
+    <span class="s0">public void </span>restart() <span class="s0">throws </span>IOException, LineUnavailableException,
+            UnsupportedAudioFileException
+    {
+        clip.stop();
+        clip.close();
+        resetAudioStream();
+        currentFrame = <span class="s4">0L</span>;
+        clip.setMicrosecondPosition(<span class="s4">0</span>);
+        <span class="s0">this</span>.play(clip);
+    }
+
+    <span class="s2">// Method to stop the audio</span>
+    <span class="s0">public void </span>stop() {
+        currentFrame = <span class="s4">0L</span>;
+        clip.stop();
+        clip.close();
+    }
+
+    <span class="s2">// Method to reset audio stream</span>
+    <span class="s0">public void </span>resetAudioStream() <span class="s0">throws </span>UnsupportedAudioFileException, IOException,
+            LineUnavailableException
+    {
+        audioInputStream = AudioSystem.getAudioInputStream(
+                <span class="s0">new </span>File(filePath).getAbsoluteFile());
+        clip.open(audioInputStream);
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
+
+}
+</pre>
+</body>
+</html>
